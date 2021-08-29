@@ -2,7 +2,8 @@ module.exports = {
     website: {
         assets: "./static",
         js: [
-            "qc.js"
+            "pixi.min.js",
+            "drawer.js",
         ],
     },
     blocks: {
@@ -41,7 +42,7 @@ module.exports = {
                     var element = document.getElementById(key);
                     if (element == null) continue;
                     var circuit = circuit_list[key];
-                    drawer = new Drawer(element, circuit);
+                    drawer = new QuantumCircuitDrawer(element, circuit);
                     drawer.draw();
                 }
             }

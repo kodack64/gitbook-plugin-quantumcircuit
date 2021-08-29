@@ -1,6 +1,5 @@
-class Drawer {
+class QuantumCircuitDrawer {
     constructor(tag, circuit_dict) {
-        this.tagname = tagname;
         this.circuit_dict = circuit_dict;
 
         this.sanitize_circuit();
@@ -12,7 +11,7 @@ class Drawer {
         tag.appendChild(this.app.view)
     }
     sanitize_circuit() {
-        for (let operation of this.circuit_dict.operation) {
+        for (let operation of this.circuit_dict.operations) {
             if (!("name" in operation)) {
                 operation.name = ""
             }
@@ -60,14 +59,14 @@ class Drawer {
         }
         if (!("num_qubit" in this.circuit_dict)) {
             let max_qubit_index = 0;
-            for (let operation of this.circuit_dict.operation) {
+            for (let operation of this.circuit_dict.operations) {
                 max_qubit_index = Math.max(max_qubit_index, operation.max_qubit_index)
             }
             this.circuit_dict.num_qubit = max_qubit_index + 1;
         }
         if (!("num_register" in this.circuit_dict)) {
             let max_register_index = -1;
-            for (let operation of this.circuit_dict.operation) {
+            for (let operation of this.circuit_dict.operations) {
                 max_register_index = Math.max(max_register_index, operation.max_register_index)
             }
             this.circuit_dict.num_register = max_register_index + 1;
@@ -87,13 +86,13 @@ class Drawer {
 
         // get max step
         let max_step = 0;
-        for (let operation of this.circuit_dict.operation) {
+        for (let operation of this.circuit_dict.operations) {
             max_step = Math.max(operation.step, max_step);
         }
         this.max_step = max_step;
 
         this.canvas_width = (max_step + 2) * this.x_step + this.x_padding * 2;
-        this.canvas_height = (this.circuit_dict.num_qubit + this.circuit_dict.num_register) * this.y_step;
+        this.canvas_height = (this.circuit_dict.num_qubit + this.circuit_dict.num_register + 0.5) * this.y_step;
     }
 
     draw() {
@@ -102,7 +101,7 @@ class Drawer {
         // draw qubit wire and name
         const num_qubit = this.circuit_dict.num_qubit;
         for (let qubit_index = 0; qubit_index < num_qubit; qubit_index += 1) {
-            this.draw_wire(0.3, qubit_index, max_step + 1 + 0.3, qubit_index);
+            this.draw_wire(0.3, qubit_index, max_step + 1 + 0.8, qubit_index);
             let qubit_name = this.circuit_dict.qubit_name[qubit_index];
             if (qubit_name !== undefined) {
                 this.draw_wire_name(qubit_index, qubit_name);
@@ -112,7 +111,7 @@ class Drawer {
         // draw register wire and name
         const num_register = this.circuit_dict.num_register;
         for (let register_index = 0; register_index < num_register; register_index += 1) {
-            this.draw_dual_wire(0.3, num_qubit + register_index, max_step + 1, num_qubit + register_index);
+            this.draw_dual_wire(0.3, num_qubit + register_index, max_step + 1 + 0.8, num_qubit + register_index);
             let register_name = this.circuit_dict.register_name[register_index];
             if (register_name !== undefined) {
                 this.draw_wire_name(num_qubit + register_index, register_name);
@@ -120,7 +119,7 @@ class Drawer {
         }
 
         // draw operation
-        for (let operation of this.circuit_dict.operation) {
+        for (let operation of this.circuit_dict.operations) {
             this.draw_operation(num_qubit, operation)
         }
     }
@@ -391,36 +390,3 @@ class Drawer {
         this.app.stage.addChild(square);
     }
 }
-
-/*
-function draw_circuit(tag, circuit_dict) {
-    drawer = new Drawer("#qc", circuit_dict);
-    drawer.draw();
-}
-*/
-/*
-window.addEventListener("load", () => {
-    const circuit_dict = {
-        num_qubit: 8,
-        num_register: 2,
-        qubit_name: { 2: "|0⟩", 5: "|ψ⟩" },
-        register_name: { 0: "m0", 1: "m1" },
-        operation: [
-            { name: "H", step: 0, target: [0, 3], control: [1] },
-            { name: "U1", step: 1, target: [0, 3], control: [1] },
-            { name: "X", step: 2, target: [0, 2], control: [1], control_neg: [3] },
-            { name: "Z", step: 3, target: [1], outcome: [0], measurement: true },
-            { name: "V", step: 4, target: [0], condition: [0] },
-            { name: "HOGE", step: 0, target: [4], control: [5] },
-            { name: "SWAP", step: 5, target: [0, 2] },
-            { name: "WIRE", step: 5, target: [3, 4] },
-            { name: "WIRE", step: 5, target: [4, 6] },
-            { name: "WIRE", step: 5, target: [6, 3] },
-            { name: "ZZ", step: 6, target: [1, 2], outcome: [0, 1], measurement: true },
-            { name: "U2", step: 2, target: [4, 5] },
-        ],
-    }
-    const tag = "#qc";
-    draw_circuit(tag, circuit_dict);
-})
-*/

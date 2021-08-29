@@ -1,0 +1,12 @@
+{
+    "name": "gitbook-plugin-quantumcircuit",
+    "version": "1.0.0",
+    "description": "Quantum circuit drawer in Honkit",
+    "main": "index.js",
+    "scripts": {},
+    "engines": {
+        "gitbook": ">=2.0.0"
+    },
+    "author": "",
+    "license": "ISC"
+}

@@ -3,6 +3,7 @@ module.exports = {
         assets: "./static",
         js: [
             "pixi.min.js",
+            "two.min.js",
             "drawer.js",
         ],
     },
@@ -42,7 +43,7 @@ module.exports = {
                     var element = document.getElementById(key);
                     if (element == null) continue;
                     var circuit = circuit_list[key];
-                    drawer = new QuantumCircuitDrawer(element, circuit);
+                    drawer = new QuantumCircuitDrawerTwo(element, circuit);
                     drawer.draw();
                 }
             }

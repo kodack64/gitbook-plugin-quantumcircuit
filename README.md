@@ -1,6 +1,6 @@
 # gitbook-plugin-quantumviz
-Gitbook plugin for visualizing quantum circuit.
-Converting `{% qcircuit %} ... {% endqcircuit %}` tags to the content of [quantum-viz.js](https://github.com/microsoft/quantum-viz.js).
+Honkit plugin for visualizing quantum circuit.
+Converting `{% qcircuit %} ... {% endqcircuit %}` tags to the SVG image of quantum circuits using [two.js](https://two.js.org/), or to the WebGL canvas using [pixi.js](https://pixijs.com/). Since the number of WebGL canvas is limited, this plugin shows image with two.js by default.
 
 ## Install
 
@@ -9,7 +9,7 @@ Converting `{% qcircuit %} ... {% endqcircuit %}` tags to the content of [quantu
 ```json
 {
     "devDependencies": {
-        "gitbook-plugin-quantumviz": "git+https://github.com/kodack64/gitbook-plugin-quantumviz",
+        "gitbook-plugin-quantumcircuit": "git+https://github.com/kodack64/gitbook-plugin-quantumcircuit",
     }
 }
 ```
@@ -19,7 +19,7 @@ Converting `{% qcircuit %} ... {% endqcircuit %}` tags to the content of [quantu
 ```json
 {
 	"plugins": [
-		"quantumviz"
+		"quantumcircuit"
 	]
 }
 ```
@@ -28,25 +28,58 @@ then run `npm update` and `npx honkit serve`.
 
 ## Usage
 
-Write the content of quantum circuit according to the [Circuit scheme](https://github.com/microsoft/quantum-viz.js/wiki/API-schema-reference). Then, content will be converted to javascript snippet to paste the circuits. The 
+By inserting json-like object among the markdown, the SVG images will be automatically inserted.
 
 ```
-To create the Bell-state, we perform quantum circuit as follows:
 {% qcircuit %}
 {
-    qubits: [{ id: 0 }, { id: 1, numChildren: 1 }],
+    qubit_name: {0: "|ψ⟩", 1: "|0⟩", 2: "|0⟩"},
+    register_name: {0: "s0", 1: "s1"},
     operations: [
-        {
-            gate: 'H', 
-            targets: [{ qId: 1 }],
-        },
-        {
-            gate: 'X', 
-            isControlled: true,
-            controls: [{ qId: 0 }],
-            targets: [{ qId: 1 }],
-        },
-    ],
+        {name: 'X', step: 0, target: [1], measurement: true, outcome: [0] },
+        {name: 'X', step: 1, target: [2], measurement: true, outcome: [1] },
+        {name: 'SWAP', step: 1, target: [0, 1]},
+        {name: 'SWAP', step: 2, target: [1, 2]},
+        {name: 'Z', step: 3, target: [2], condition: [0]},
+        {name: 'X', step: 4, target: [2], condition: [1]},
+    ]
 };
 {% endqcircuit %}
 ```
+
+
+The above will be converted as:
+<img src="./example/bell.svg">
+
+
+## Format
+
+- `num_qubit (int)`: (optional) The number of qubit. If not assigned, determined from the maximum index of operations.
+- `num_register (int)`: (optional) The number of register. If not assigned, determined from the maximum index of operations.
+- `qubit_name (dict[int, str])`: (default to `{}`) The map from qubit indices to the name of them. The name is shown in the left of corresponding wire. If key not found, no text is shown.
+- `register_name (dict[int, str])`: (default to `{}`) The map from register indices to the name of them. The name is shown in the left of corresponding wire. If key not found, no text is shown.
+- `output_name (dict[int, str])`: (default to `{}`) The map from output-wire indices to the name of them. The name is shown in the right of corresponding wire. If key not found, no text is shown.
+- `operations (list)`: (required) The list `operations` must be a list of the following `dict` objects.
+  - `name (str)`: (required) The name of gate. The texts are shown in the box of gates. Several strings are registered as special strings.
+  - `step (int)`: (required) The index of moment of a quantum gate.
+  - `target (list[int])`: (default to `[]`) The list of indices of target qubits.
+  - `control (list[int])`: (default to `[]`) The list of indices of control qubits, shown as black circle.
+  - `control_neg (list[int])`: (default to `[]`) The list of indices of not-control qubits, shown as white circle.
+  - `condition (list[int])`: (default to `[]`) The list of indices of conditioning classical registers.
+  - `outcome (list[int])`: (default to `[]`) The list of indices of registers where the measurement gate writes.
+  - `measurement (bool)`: (deafult to `false`) If true, the block becomes measurement mark.
+  - `classical (bool)`: (deafult to `false`) If true, the gate acts on the classical register instead of qubit wires.
+
+### Special gate name
+
+The following names are considered as special key, and when conditions are satisfied, special marks are used.
+
+- `X`: If the number of items in `control` and `control_neg` is no less than 1, a popular CNOT-block is used.
+- `Z`: If the number of items in `control` is one and `control_neg` is zero, then, a popular Control-Z block is used.
+- `SWAP`: If the number of items in `target` is two and has no `control` and `control_neg`, then wires are physical swapped.
+- `WIRE`: If the number of items in `target` is two and has no `control` and `control_neg`, the wire of the first item in `target` is connected to the wire of the second item. 
+
+If you want to use quantum gates with these characters, add whitespace before or after the name. These blanks are trimmed when it is used.
+
+The above will be converted as:
+<img src="./example/random.svg">

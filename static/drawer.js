@@ -69,16 +69,16 @@ class QuantumCircuitDrawerBase {
                 }
             }
             this.circuit_dict.num_qubit = max_qubit_index + 1;
-            this.num_qubit = this.circuit_dict.num_qubit;
         }
+        this.num_qubit = this.circuit_dict.num_qubit;
         if (!("num_register" in this.circuit_dict)) {
             let max_register_index = -1;
             for (let operation of this.circuit_dict.operations) {
                 max_register_index = Math.max(max_register_index, operation.max_register_index)
             }
             this.circuit_dict.num_register = max_register_index + 1;
-            this.num_register = this.circuit_dict.num_register;
         }
+        this.num_register = this.circuit_dict.num_register;
         for (let operation of this.circuit_dict.operations) {
             operation.type = this.check_operation_type(operation);
         }
@@ -152,7 +152,7 @@ class QuantumCircuitDrawerBase {
             return "MEASUREMENT";
         } else if (operation.name == "X" && operation.control.length + operation.control_neg.length >= 1) {
             return "CONTROL_X";
-        } else if (operation.name == "Z" && operation.control.length >= 1 && operation.control_neg.length == 0) {
+        } else if (operation.name == "Z" && operation.control.length == 1 && operation.control_neg.length == 0) {
             return "CONTROL_Z"
         } else if (operation.name == "SWAP" && operation.target.length == 2 && operation.control.length + operation.control_neg.length == 0) {
             return "SWAP";

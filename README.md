@@ -1,4 +1,4 @@
-# gitbook-plugin-quantumviz
+# gitbook-plugin-quantumcircuit
 Honkit plugin for visualizing quantum circuit.
 Converting `{% qcircuit %} ... {% endqcircuit %}` tags to the SVG image of quantum circuits using [two.js](https://two.js.org/), or to the WebGL canvas using [pixi.js](https://pixijs.com/). Since the number of WebGL canvas is limited, this plugin shows image with two.js by default.
 

@@ -26,30 +26,32 @@ Converting `{% qcircuit %} ... {% endqcircuit %}` tags to the SVG image of quant
 
 then run `npm update` and `npx honkit serve`.
 
-## Usage
+## Example
 
 By inserting json-like object among the markdown, the SVG images will be automatically inserted.
 
 ```
 {% qcircuit %}
 {
-    qubit_name: {0: "|ψ⟩", 1: "|0⟩", 2: "|0⟩"},
-    register_name: {0: "s0", 1: "s1"},
+    qubit_name: {0: "|ψ⟩", 1: "|0⟩", 2: "|0⟩", },
+    register_name: {0: "m0", 1: "m1",},
+    output_name: {2: "|ψ⟩",},
     operations: [
-        {name: 'X', step: 0, target: [1], measurement: true, outcome: [0] },
-        {name: 'X', step: 1, target: [2], measurement: true, outcome: [1] },
-        {name: 'SWAP', step: 1, target: [0, 1]},
-        {name: 'SWAP', step: 2, target: [1, 2]},
-        {name: 'Z', step: 3, target: [2], condition: [0]},
-        {name: 'X', step: 4, target: [2], condition: [1]},
+        {name: "H", step: 0, target: [1], }, 
+        {name: "X", step: 1, target: [2], control: [1], }, 
+        {name: "X", step: 2, target: [1], control: [0], }, 
+        {name: "X", step: 3, target: [0], measurement: true, outcome: [0],}, 
+        {name: "Z", step: 4, target: [1], measurement: true, outcome: [1],}, 
+        {name: "X", step: 5, target: [2], condition: [1], }, 
+        {name: "Z", step: 6, target: [2], condition: [0], }, 
     ]
-};
+}
 {% endqcircuit %}
 ```
 
-
 The above will be converted as:
-<img src="./example/bell.svg">
+
+<img src="./example/bell.png"/>
 
 
 ## Format
@@ -81,5 +83,46 @@ The following names are considered as special key, and when conditions are satis
 
 If you want to use quantum gates with these characters, add whitespace before or after the name. These blanks are trimmed when it is used.
 
+### Demo
+
+```
+{% qcircuit %}
+{
+    num_qubit: 5,
+    num_register: 3,
+    qubit_name: { 0: "q0", 2: "a0", },
+    register_name: { 1: "ans",},
+    output_name: { 0: "out",},
+    operations: [
+        // simultaneous gate
+        {name: "X", step: 0, target: [0]}, 
+        {name: "U3", step: 0, target: [1]}, 
+
+        // large gate box
+        {name: "RZZZ", step: 1, target: [1, 2, 3]}, 
+        {name: "RZZ", step: 2, target: [1, 3]}, 
+
+        // multiple controls
+        {name: "X", step: 3, target: [1, 3], control: [2], control_neg: [0],}, 
+        {name: "Z", step: 4, target: [2], control: [3],}, 
+
+        // complex wiring
+        {name: "SWAP", step: 4, target: [0, 1],}, 
+        {name: "WIRE", step: 5, target: [1, 0],}, 
+        {name: "WIRE", step: 5, target: [2, 3],}, 
+        {name: "WIRE", step: 5, target: [0, 2],}, 
+        {name: "WIRE", step: 5, target: [3, 1],}, 
+
+        // measurement and feedback
+        {name: "X", step: 6, target: [1], outcome: [1], measurement: true,}, 
+        {name: "X", step: 7, target: [2], outcome: [2], measurement: true,}, 
+        {name: "V(Θ)", step: 8, target: [0, 2], condition: [1],}, 
+        {name: "X", step: 9, target: [1], classical: true,}, 
+    ]
+}
+{% endqcircuit %}
+```
+
 The above will be converted as:
-<img src="./example/random.svg">
+
+<img src="./example/random.png"/>

@@ -2,7 +2,6 @@ module.exports = {
     website: {
         assets: "./static",
         js: [
-            "pixi.min.js",
             "two.min.js",
             "drawer.js",
         ],

@@ -64,6 +64,8 @@ The above will be converted as:
 - `operations (list)`: (required) The list `operations` must be a list of the following `dict` objects.
   - `name (str)`: (required) The name of gate. The texts are shown in the box of gates. Several strings are registered as special strings.
   - `step (int)`: (required) The index of moment of a quantum gate.
+  - `color_fill (str)`: (default to `"#cde9f7"`)  The filling color of gate box. Specified with "#rrggbb", where "#000000" is black and "#ffffff" is white.
+  - `color_fill (str)`: (default to `"#cde9f7"`)  The stroke colof of gate box. Specified with "#rrggbb", where "#000000" is black and "#ffffff" is white.
   - `target (list[int])`: (default to `[]`) The list of indices of target qubits.
   - `control (list[int])`: (default to `[]`) The list of indices of control qubits, shown as black circle.
   - `control_neg (list[int])`: (default to `[]`) The list of indices of not-control qubits, shown as white circle.

@@ -13,6 +13,12 @@ class QuantumCircuitDrawerBase {
             if (!("name" in operation)) {
                 operation.name = ""
             }
+            if (!("color_fill" in operation)) {
+                operation.color_fill = null;
+            }
+            if (!("color_stroke" in operation)) {
+                operation.color_stroke = null;
+            }
             if (!("qubit_name" in operation)) {
                 operation.qubit_name = {}
             }
@@ -263,10 +269,11 @@ class QuantumCircuitDrawerBase {
         } else if (this.is_subsequent(target_list)) {
             const min_target_index = Math.min.apply(Math, target_list);
             const max_target_index = Math.max.apply(Math, target_list);
-            this.draw_merged_box(step, min_target_index, max_target_index, name);
+            const color_fill = operation.color_fill;
+            this.draw_merged_box(step, min_target_index, max_target_index, name, operation.color_fill, operation.color_stroke);
         } else {
             for (let target_index of target_list) {
-                this.draw_box(step, target_index, name);
+                this.draw_box(step, target_index, name, operation.color_fill, operation.color_stroke);
             }
         }
     }
@@ -316,7 +323,7 @@ class QuantumCircuitDrawerTwo extends QuantumCircuitDrawerBase {
         this.two.makeLine(pos1[0], pos1[1], pos2[0], pos2[1])
     }
 
-    draw_merged_box(pos_x, pos_y0, pos_y1, name) {
+    draw_merged_box(pos_x, pos_y0, pos_y1, name, color_fill, color_stroke) {
         const squareWidth = this.x_step * 0.7;
         const squareHeight = this.y_step * (pos_y1 - pos_y0 + 1 - 0.3);
         const fontSize = this.x_step * 0.6 / Math.max(name.trim().length, 1);
@@ -324,11 +331,13 @@ class QuantumCircuitDrawerTwo extends QuantumCircuitDrawerBase {
         let x = pos[0];
         let y = pos[1];
         var rect = this.two.makeRectangle(x, y, squareWidth, squareHeight);
-        rect.fill = "#cde9f7"
-        rect.stroke = '#000000';
+        if (color_fill !== null) rect.fill = color_fill;
+        else rect.fill = "#cde9f7";
+        if (color_stroke !== null) rect.stroke = color_stroke;
+        else rect.stroke = '#000000';
         this.two.makeText(name.trim(), x, y, { alignment: "center", size: fontSize });
     }
-    draw_box(pos_x, pos_y, name) {
+    draw_box(pos_x, pos_y, name, color_fill, color_stroke) {
         const squareWidth = this.x_step * 0.7;
         const squareHeight = this.y_step * 0.7;
         const fontSize = this.x_step * 0.5 / Math.max(name.trim().length, 1);
@@ -337,8 +346,10 @@ class QuantumCircuitDrawerTwo extends QuantumCircuitDrawerBase {
         let y = pos[1];
 
         var rect = this.two.makeRectangle(x, y, squareWidth, squareHeight);
-        rect.fill = "#cde9f7"
-        rect.stroke = '#000000';
+        if (color_fill !== null) rect.fill = color_fill;
+        else rect.fill = "#cde9f7";
+        if (color_stroke !== null) rect.stroke = color_stroke;
+        else rect.stroke = '#000000';
 
         this.two.makeText(name.trim(), x, y, { alignment: "center", size: fontSize });
     }
@@ -460,7 +471,7 @@ class QuantumCircuitDrawerPixi extends QuantumCircuitDrawerBase {
         this.app.stage.addChild(wire);
     }
 
-    draw_merged_box(pos_x, pos_y0, pos_y1, name) {
+    draw_merged_box(pos_x, pos_y0, pos_y1, name, _color_fill, _color_stroke) {
         const squareWidth = this.x_step * 0.7;
         const squareHeight = this.y_step * (pos_y1 - pos_y0 + 1 - 0.3);
         const fontSize = this.x_step * 0.6 / Math.max(name.trim().length, 1);
@@ -480,7 +491,7 @@ class QuantumCircuitDrawerPixi extends QuantumCircuitDrawerBase {
         square.addChild(text);
         this.app.stage.addChild(square);
     }
-    draw_box(pos_x, pos_y, name) {
+    draw_box(pos_x, pos_y, name, _color_fill, _color_stroke) {
         const squareWidth = this.x_step * 0.7;
         const squareHeight = this.y_step * 0.7;
         const fontSize = this.x_step * 0.5 / Math.max(name.trim().length, 1);

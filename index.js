@@ -17,7 +17,7 @@ module.exports = {
     hooks: {
         "page:before": function(page) {
             results = page.content.match(/{% qcircuit %}((.*[\r\n]+)+?)?{% endqcircuit %}/igm);
-            if (results == null) return;
+            if (results == null) return page;
 
             let len = results.length;
             circuit_names = [];
